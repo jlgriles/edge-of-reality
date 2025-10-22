@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interstellar Podcast Explorer</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Header -->
+  <div id="header">
+    <h1 class="podcast-title">Edge of Reality</h1>
+    <button class="about-button" onclick="openAboutModal()">About</button>
+  </div>
+
+  <!-- WebGL compatibility check -->
+  <div id="webgl-error" class="hidden">
+    <p>Your browser doesn't support WebGL. Please use a modern browser like Chrome, Firefox, or Safari.</p>
+  </div>
+
+  <!-- Three.js canvas container -->
+  <div id="canvas-container"></div>
+
+  <!-- Directional labels container -->
+  <div id="directional-labels"></div>
+
+  <!-- Tooltip -->
+  <div id="tooltip" class="hidden"></div>
+
+  <!-- Modal container -->
+  <div id="modal-container"></div>
+
+  <!-- Three.js library -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  
+  <!-- Episode data -->
+  <script src="nodes-data.js"></script>
+  
+  <!-- Main application -->
+  <script src="app.js"></script>
+</body>
+</html>
