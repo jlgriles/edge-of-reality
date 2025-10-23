@@ -7,6 +7,15 @@ let autoRotationSpeed = 0.0005;
 let isUserInteracting = false;
 let openModals = [];
 
+// Category color mapping
+const categoryColors = {
+  'technology': 0x00ffff,    // cyan
+  'science': 0xff00ff,       // magenta
+  'health': 0x00ff00,        // green
+  'culture': 0xffff00,       // yellow
+  'business': 0xff8800       // orange
+};
+
 // Interaction state
 let isDragging = false;
 let mouseDownPos = { x: 0, y: 0 };
@@ -115,9 +124,13 @@ function createNode(nodeData) {
   const radius = 950;
   const position = sphericalToCartesian(nodeData.theta, nodeData.phi, radius);
   
+  // Get color from first category
+  const firstCategory = nodeData.themes[0];
+  const nodeColor = categoryColors[firstCategory] || 0xffffff; // default to white if category not found
+  
   const geometry = new THREE.SphereGeometry(15, 32, 32);
   const material = new THREE.MeshBasicMaterial({
-    color: 0xaaddff,
+    color: nodeColor,
     transparent: true,
     opacity: 0.9
   });
@@ -127,7 +140,7 @@ function createNode(nodeData) {
   
   const glowGeometry = new THREE.SphereGeometry(20, 32, 32);
   const glowMaterial = new THREE.MeshBasicMaterial({
-    color: 0xffffff,
+    color: nodeColor,
     transparent: true,
     opacity: 0.3
   });
@@ -180,23 +193,16 @@ function setupEventListeners() {
   
   window.addEventListener('resize', onWindowResize);
   
-  // Event delegation for directional labels
+  // Event delegation for directional labels (backup)
   const labelsContainer = document.getElementById('directional-labels');
-  console.log('Setting up click handler on:', labelsContainer);
   
   labelsContainer.addEventListener('click', function(e) {
-    console.log('Container clicked!', e.target);
     const label = e.target.closest('.directional-label');
-    console.log('Closest label:', label);
     if (label && label.dataset.nodeId) {
-      console.log('Label node ID:', label.dataset.nodeId);
       e.stopPropagation();
       e.preventDefault();
-      // Find the node by ID
       const node = nodes.find(n => n.data.id === label.dataset.nodeId);
-      console.log('Found node:', node);
       if (node) {
-        console.log('Calling rotateToNode');
         rotateToNode(node);
       }
     }
@@ -393,13 +399,14 @@ function openModal(nodeData) {
   
   const description = document.createElement('p');
   description.className = 'modal-description';
-  description.textContent = 'Explore the fascinating insights and conversations in this episode. Listen below or click through to Spotify for the full experience.';
+  description.textContent = 'This episode is coming soon! We\'re still cooking up the cosmic conversations and interdimensional insights. Check back later to engage with the full podcast experience. Until then, keep exploring the constellation and stay on the edge of reality!';
   
-  const iframe = document.createElement('iframe');
-  iframe.className = 'spotify-embed';
-  iframe.src = nodeData.spotifyEmbed;
-  iframe.allowtransparency = 'true';
-  iframe.allow = 'encrypted-media';
+  // Spotify embed - uncomment when episodes are ready
+  // const iframe = document.createElement('iframe');
+  // iframe.className = 'spotify-embed';
+  // iframe.src = nodeData.spotifyEmbed;
+  // iframe.allowtransparency = 'true';
+  // iframe.allow = 'encrypted-media';
   
   const tags = document.createElement('div');
   tags.className = 'modal-tags';
@@ -407,13 +414,17 @@ function openModal(nodeData) {
     const tag = document.createElement('span');
     tag.className = 'tag';
     tag.textContent = theme;
+    // Convert category color to hex string for CSS
+    const categoryColorHex = categoryColors[theme] || 0xffffff;
+    const colorHex = '#' + categoryColorHex.toString(16).padStart(6, '0');
+    tag.style.color = colorHex;
     tags.appendChild(tag);
   });
   
   modalContent.appendChild(closeButton);
   modalContent.appendChild(title);
   modalContent.appendChild(description);
-  modalContent.appendChild(iframe);
+  // modalContent.appendChild(iframe); // Uncomment when episodes are ready
   modalContent.appendChild(tags);
   modalBackdrop.appendChild(modalContent);
   
@@ -451,15 +462,15 @@ function openAboutModal() {
   const description = document.createElement('div');
   description.className = 'modal-description';
   description.innerHTML = `
-    <p style="margin-bottom: 16px;">Welcome to Edge of Reality, where we explore the intersection of consciousness, technology, and the nature of existence itself.</p>
-    <p style="margin-bottom: 16px;">Navigate through our constellation of episodes by dragging to rotate the sphere. Each glowing node represents an episode, connected to others that share similar themes.</p>
-    <p style="margin-bottom: 16px;">Click on any node or directional label to dive into an episode and discover new perspectives on reality.</p>
+    <p style="margin-bottom: 16px;">Welcome to Edge of Reality, where researchers share their groundbreaking work and explore what excites them at the frontier of human knowledge.</p>
+    <p style="margin-bottom: 16px;">Each episode features a guest researcher presenting their work across fields like neuroscience, physics, artificial intelligence, psychology, and beyondâ€”diving into both established findings and speculative horizons.</p>
+    <p style="margin-bottom: 16px;">Navigate through our constellation of episodes by dragging to rotate the sphere. Each glowing node represents an episode, connected to others that share similar themes. Hover over nodes to see episode titles, or follow the directional category labels to explore.</p>
     <p><strong>How to Navigate:</strong></p>
     <ul style="margin-left: 20px; margin-top: 8px;">
       <li>Drag to rotate the sphere</li>
       <li>Click nodes to play episodes</li>
-      <li>Click directional labels to navigate</li>
       <li>Hover over nodes for episode titles</li>
+      <li>Follow category labels to explore themes</li>
     </ul>
   `;
   
@@ -516,24 +527,24 @@ function updateDirectionalLabels() {
         if (dirX > 0) {
           labelX = window.innerWidth - 250;
           labelY = Math.max(80, Math.min(window.innerHeight - 80, y));
-          arrow = '→';
+          arrow = '>';
           edge = 'right';
         } else {
           labelX = 20;
           labelY = Math.max(80, Math.min(window.innerHeight - 80, y));
-          arrow = '←';
+          arrow = '<';
           edge = 'left';
         }
       } else {
         if (dirY > 0) {
           labelX = Math.max(20, Math.min(window.innerWidth - 250, x - 100));
           labelY = window.innerHeight - 60;
-          arrow = '↓';
+          arrow = 'v';
           edge = 'bottom';
         } else {
           labelX = Math.max(20, Math.min(window.innerWidth - 250, x - 100));
           labelY = 80;
-          arrow = '↑';
+          arrow = '^';
           edge = 'top';
         }
       }
@@ -562,8 +573,7 @@ function updateDirectionalLabels() {
   
   const minSpacing = 40;
   
-  // Clear existing labels (this is the problem - destroys event listeners!)
-  // Instead, let's mark all as unused and reuse/create as needed
+  // Reuse existing labels to preserve event listeners
   const existingLabels = Array.from(labelsContainer.querySelectorAll('.directional-label'));
   const usedLabels = new Set();
   
@@ -688,20 +698,35 @@ function updateDirectionalLabels() {
     // Try to find existing label for this node
     let label = existingLabels.find(l => l.dataset.nodeId === labelData.node.data.id);
     
+    // Convert category color to hex string for CSS
+    const firstCategory = labelData.node.data.themes[0];
+    const categoryColorHex = categoryColors[firstCategory] || 0xffffff;
+    const colorHex = '#' + categoryColorHex.toString(16).padStart(6, '0');
+    
     if (label) {
-      // Reuse existing label (preserves event listeners!)
+      // Reuse existing label to preserve event listeners
       label.style.left = `${finalX}px`;
       label.style.top = `${finalY}px`;
-      label.textContent = labelData.arrow + ' ' + labelData.node.data.title;
+      const themeText = labelData.node.data.themes[0];
+      label.innerHTML = `<span class="arrow">${labelData.arrow}</span><span class="label-text" style="color: ${colorHex};">${themeText}</span>`;
       usedLabels.add(label);
     } else {
       // Create new label
       label = document.createElement('div');
       label.className = 'directional-label visible';
-      label.textContent = labelData.arrow + ' ' + labelData.node.data.title;
+      const themeText = labelData.node.data.themes[0];
+      label.innerHTML = `<span class="arrow">${labelData.arrow}</span><span class="label-text" style="color: ${colorHex};">${themeText}</span>`;
       label.style.left = `${finalX}px`;
       label.style.top = `${finalY}px`;
       label.dataset.nodeId = labelData.node.data.id;
+      
+      // Add direct click handler to the label
+      const nodeToRotateTo = labelData.node;
+      label.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        rotateToNode(nodeToRotateTo);
+      });
       
       labelsContainer.appendChild(label);
       usedLabels.add(label);
@@ -775,6 +800,26 @@ function onWindowResize() {
 
 function animate() {
   requestAnimationFrame(animate);
+  
+  // Animate nodes - pulsing glow effect
+  const time = Date.now() * 0.001; // Convert to seconds
+  nodes.forEach((node, index) => {
+    // Each node pulses at slightly different rate/offset for variety
+    const pulseSpeed = 1.5 + (index * 0.1) % 1; // Vary speed between 1.5-2.5
+    const pulseOffset = index * 0.5; // Stagger the pulses
+    const pulse = Math.sin(time * pulseSpeed + pulseOffset) * 0.5 + 0.5; // 0 to 1
+    
+    // Pulse the opacity of the main node
+    node.mesh.material.opacity = 0.7 + (pulse * 0.3); // 0.7 to 1.0
+    
+    // Pulse the glow (first child)
+    if (node.mesh.children[0]) {
+      node.mesh.children[0].material.opacity = 0.2 + (pulse * 0.3); // 0.2 to 0.5
+      // Also pulse the scale slightly
+      const scale = 1 + (pulse * 0.2); // 1.0 to 1.2
+      node.mesh.children[0].scale.set(scale, scale, scale);
+    }
+  });
   
   if (isDragging || Math.abs(sphereRotationVelocity.x) > 0.0001 || Math.abs(sphereRotationVelocity.y) > 0.0001) {
     sphere.rotation.x += sphereRotationVelocity.x;
