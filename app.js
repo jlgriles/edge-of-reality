@@ -464,7 +464,7 @@ function openAboutModal() {
   description.innerHTML = `
     <p style="margin-bottom: 16px;">Welcome to the Edge of Reality, where researchers share their groundbreaking work and explore what excites them at the frontier of human knowledge.</p>
     <p style="margin-bottom: 16px;">Each episode features a guest researcher presenting their work across fields like neuroscience, physics, artificial intelligence, psychology, and beyond, diving into both established findings and speculative horizons.</p>
-    <p style="margin-bottom: 16px;">Navigate through our constellation of episodes by dragging to rotate the sphere. Each glowing node represents an episode, connected to others that share similar themes. Hover over nodes to see episode titles, or follow the directional category labels to explore.</p>
+    <p style="margin-bottom: 16px;">Navigate through the constellation of episodes by dragging to rotate the sphere. Each glowing node represents an episode, connected to others that share similar themes. Hover over nodes to see episode titles, or follow the directional category labels to explore.</p>
   `;
   
   modalContent.appendChild(closeButton);
