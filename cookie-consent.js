@@ -80,6 +80,7 @@
       'padding:8px 16px;font:inherit;background:transparent;color:#f2f2f2}' +
       '#cc-accept{background:#f2f2f2;color:#1a1a1a;border-color:#f2f2f2}' +
       '@media (max-width:480px){#cc-banner{flex-direction:column;align-items:stretch}' +
+      '#cc-text{flex:1 1 auto}' +
       '#cc-actions{justify-content:flex-end}}';
     document.head.appendChild(style);
 
